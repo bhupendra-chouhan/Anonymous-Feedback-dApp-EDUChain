@@ -1,9 +1,8 @@
 import React from "react";
 import AppLayout from "./AppLayout";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-// import NftList from "./Body/NftList/NftList";
-// import CreateNft from "./Body/CreateNft/CreateNft";
 import Error from "./Error";
+import AnonymousMessage from "./AnonymousMessage";
 
 const Routing = () => {
   const appRouter = createBrowserRouter([
@@ -11,10 +10,10 @@ const Routing = () => {
       path: "/",
       element: <AppLayout />,
       children: [
-        // {
-        //   path: "/create-nft",
-        //   element: <CreateNft />,
-        // },
+        {
+          path: "/",
+          element: <AnonymousMessage/>,
+        },
       ],
       errorElement: <Error />,
     },
