@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { ethers, BrowserProvider } from "ethers";
+import React, { useState } from "react";
+import { ethers, BrowserProvider, Contract } from "ethers";
 
-const contractAddress = "0xdf3D918C89CaCC9064bE94D3B921c5465F68c3EE";
+// Config: Separate ABI and Contract Address
+const contractAddress =
+  process.env.REACT_APP_EDUCHAIN_DEPLOYED_SMART_CONTRACT_ADDRESS;
 const contractABI = [
   {
     anonymous: false,
@@ -42,35 +44,37 @@ const contractABI = [
   },
 ];
 
-const AnonymousMessage = ({ setPubAddress }) => {
+const AnonymousMessage = ({ setPubAddress = () => {} }) => {
   const [account, setAccount] = useState(null);
-  const [provider, setProvider] = useState(null);
   const [contract, setContract] = useState(null);
   const [message, setMessage] = useState("");
   const [messageId, setMessageId] = useState("");
   const [retrievedMessage, setRetrievedMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
         // Request account access
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        const web3Provider = new BrowserProvider(window.ethereum);
-        const signer = web3Provider.getSigner();
-        const contractInstance = new ethers.Contract(
+        const provider = new BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+
+        const accountAddress = await signer.getAddress();
+
+        // Create contract instance with signer
+        const contractInstance = new Contract(
           contractAddress,
           contractABI,
           signer
         );
 
-        setAccount(accounts[0]);
-        setProvider(web3Provider);
+        setAccount(accountAddress);
         setContract(contractInstance);
-        setPubAddress(accounts[0]); // Pass account to parent component if required
+        setPubAddress(accountAddress);
       } catch (error) {
         console.error("Error connecting to MetaMask:", error);
+        alert(`Connection failed: ${error.message}`);
       }
     } else {
       alert("MetaMask not detected. Please install MetaMask to use this dApp.");
@@ -79,13 +83,23 @@ const AnonymousMessage = ({ setPubAddress }) => {
 
   const handleStoreMessage = async () => {
     if (contract && message.trim()) {
+      setIsLoading(true);
       try {
+        // Send the transaction
         const tx = await contract.storeMessage(message);
-        await tx.wait();
+
+        // Wait for confirmation
+        const receipt = await tx.wait();
+
         alert("Message stored successfully!");
         setMessage("");
       } catch (error) {
         console.error("Error storing message:", error);
+        const errorMessage =
+          error?.error?.message || error.message || "Unknown error.";
+        alert("Transaction failed: " + errorMessage);
+      } finally {
+        setIsLoading(false);
       }
     } else {
       alert("Please enter a message and connect your wallet.");
@@ -100,6 +114,7 @@ const AnonymousMessage = ({ setPubAddress }) => {
         setRetrievedMessage({ content, sender });
       } catch (error) {
         console.error("Error retrieving message:", error);
+        alert("Failed to retrieve the message. Please check the message ID.");
       }
     } else {
       alert("Please enter a valid message ID and connect your wallet.");
@@ -107,7 +122,14 @@ const AnonymousMessage = ({ setPubAddress }) => {
   };
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>
+    <div
+      style={{
+        fontFamily: "Arial, sans-serif",
+        padding: "20px",
+        maxWidth: "600px",
+        margin: "0 auto",
+      }}
+    >
       <header
         style={{
           display: "flex",
@@ -119,7 +141,15 @@ const AnonymousMessage = ({ setPubAddress }) => {
         <h1>Message Storage DApp</h1>
         <button
           onClick={connectWallet}
-          style={{ padding: "10px 20px", fontSize: "16px" }}
+          style={{
+            padding: "10px 20px",
+            fontSize: "16px",
+            backgroundColor: account ? "#4CAF50" : "#008CBA",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
         >
           {account
             ? `Connected: ${account.slice(0, 6)}...${account.slice(-4)}`
@@ -143,9 +173,18 @@ const AnonymousMessage = ({ setPubAddress }) => {
         />
         <button
           onClick={handleStoreMessage}
-          style={{ padding: "10px 20px", fontSize: "16px" }}
+          style={{
+            padding: "10px 20px",
+            fontSize: "16px",
+            backgroundColor: "#4CAF50",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+          disabled={isLoading || !account}
         >
-          Store Message
+          {isLoading ? "Processing..." : "Store Message"}
         </button>
       </section>
 
@@ -165,7 +204,16 @@ const AnonymousMessage = ({ setPubAddress }) => {
         />
         <button
           onClick={handleRetrieveMessage}
-          style={{ padding: "10px 20px", fontSize: "16px" }}
+          style={{
+            padding: "10px 20px",
+            fontSize: "16px",
+            backgroundColor: "#008CBA",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+          disabled={!account}
         >
           Retrieve Message
         </button>
@@ -176,13 +224,22 @@ const AnonymousMessage = ({ setPubAddress }) => {
               marginTop: "20px",
               padding: "10px",
               border: "1px solid #ccc",
+              borderRadius: "5px",
             }}
           >
             <p>
               <strong>Message:</strong> {retrievedMessage.content}
             </p>
             <p>
-              <strong>Sender:</strong> {retrievedMessage.sender}
+              <strong>Sender:</strong>{" "}
+              <a
+                href={`https://etherscan.io/address/${retrievedMessage.sender}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#008CBA" }}
+              >
+                {retrievedMessage.sender}
+              </a>
             </p>
           </div>
         )}
