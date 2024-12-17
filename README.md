@@ -1,79 +1,54 @@
-# 📝 EduChain: Anonymous Message dApp
+# Anonymous Feedback dApp 🗣️🔒
 
-## 🌟 Project Description
+## Project Description
 
-EduChain's MessageStorage is a decentralized blockchain application that allows users to anonymously store and retrieve messages on the Ethereum network. By leveraging smart contract technology, this platform provides a secure, transparent, and immutable way to record and share messages.
+Anonymous Feedback dApp is a decentralized application that allows users to store and retrieve feedback anonymously on the blockchain. Leveraging the power of Ethereum smart contracts, this platform provides a secure, transparent, and immutable way to share thoughts, suggestions, and insights without revealing personal identities.
 
-## 🚀 Vision
+## Vision
 
-The vision behind MessageStorage is to create a decentralized communication platform that:
-- Ensures message integrity
-- Provides transparency through blockchain technology
-- Allows anonymous yet traceable message storage
-- Empowers users with complete control over their communications
+Our vision is to create an open, transparent feedback mechanism that:
+- Protects user privacy
+- Ensures data integrity
+- Provides a censorship-resistant platform for honest communication
+- Enables anonymous yet traceable feedback submissions
 
-## 🔗 Contract Details
+## Smart Contract Details
 
-### Smart Contract Address
-0xdf3D918C89CaCC9064bE94D3B921c5465F68c3EE
+### Contract Overview
+- **Contract Name**: FeedbackStorage
+- **Contract Address**: 0x4Af9Bf4Cc52b2c08C45007476809461975782eae
 
-## 🌈 Key Features
-
-1. **Secure Message Storage**
-   - Store messages permanently on the blockchain
-   - Each message gets a unique ID
-   - Sender's address is recorded with the message
-
-2. **Message Retrieval**
-   - Retrieve messages using their unique ID
-   - Access message content and sender information
-   - Transparent and verifiable message history
-
-3. **Anonymous Messaging**
-   - Messages can be stored without revealing personal identity
-   - Sender's address is the only traceable information
-
-## 🛠 Technical Specifications
-
-### Contract Functions
-
-- `storeMessage(string memory message)`: 
-  - Stores a new message
-  - Returns a unique message ID
-  - Prevents empty messages
-  - Emits a `MessageStored` event
-
-- `getMessage(uint256 id)`: 
-  - Retrieves a message by its ID
-  - Returns message content and sender's address
-  - Validates message ID existence
+### Key Functions
+- `createFeedback(string memory feedback)`: Submit an anonymous feedback
+  - Returns a unique feedback ID
+  - Prevents empty feedback submissions
+- `getFeedback(uint256 id)`: Retrieve feedback content and sender address by ID
 
 ### Events
+- `FeedbackCreated`: Emitted when a new feedback is submitted
+  - Includes feedback ID, sender address, and feedback content
 
-- `MessageStored(uint256 id, address indexed sender, string message)`
-  - Triggers when a new message is stored
-  - Provides real-time notification of message creation
+## Key Features
 
-## 🔮 Future Scope
+🔐 **Anonymity**: Share feedback without compromising personal identity
+🔒 **Blockchain Security**: Immutable and tamper-proof feedback storage
+🌐 **Decentralized**: No central authority controls or censors feedback
+🔢 **Unique Identification**: Each feedback gets a unique ID for reference
+📝 **Transparent Tracking**: Sender's address is recorded for accountability
 
-1. **Enhanced Privacy Features**
-   - Implement optional message encryption
-   - Add message expiration mechanisms
-   - Create user-controlled access controls
+## Future Scope
 
-2. **Scalability Improvements**
-   - Support for multi-chain deployment
-   - Gas optimization techniques
-   - Batch message storage and retrieval
-
-3. **Ecosystem Expansion**
-   - Develop frontend interfaces
-   - Create developer APIs
-   - Build integration libraries for various platforms
+🚀 Potential Enhancements:
+- Implement voting/rating mechanism for feedbacks
+- Add category tagging for feedbacks
+- Create a frontend dashboard for feedback analytics
+- Develop multi-chain support
+- Implement access control for feedback retrieval
+- Add optional anonymity levels
 
 ---
 
-### Setup guid:
+### Setup guide:
 ##### 1. Clone this template repository
 ```
 git clone <repo-link>

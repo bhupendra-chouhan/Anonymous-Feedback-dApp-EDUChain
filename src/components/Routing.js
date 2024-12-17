@@ -2,7 +2,7 @@ import React from "react";
 import AppLayout from "./AppLayout";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Error from "./Error";
-import AnonymousMessage from "./AnonymousMessage";
+import AnonymousFeedback from "./AnonymousFeedback";
 
 const Routing = () => {
   const appRouter = createBrowserRouter([
@@ -12,7 +12,7 @@ const Routing = () => {
       children: [
         {
           path: "/",
-          element: <AnonymousMessage/>,
+          element: <AnonymousFeedback/>,
         },
       ],
       errorElement: <Error />,
